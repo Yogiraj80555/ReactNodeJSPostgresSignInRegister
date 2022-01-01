@@ -2,9 +2,10 @@ const pool = require("../db");
 const bcrypt = require('bcrypt');
 const router = require("express").Router();
 const jwtGenerator = require("../utils/jwtGenerator");
-
+const validation = require("../middleware/validateInfo")
+const authorized = require("../middleware/authorization")
 //registering
-router.post("/register", async(req, res) => {
+router.post("/register", validation,async(req, res) => {
     try{
 
         // 1. Destructure the req.body and get name, email, pass
@@ -44,7 +45,7 @@ router.post("/register", async(req, res) => {
 
 
 //login route
-router.post("/login", async (req,res) => {
+router.post("/login", validation, async (req,res) => {
     try{
         //1. destructure the req.body
 
@@ -58,7 +59,7 @@ router.post("/login", async (req,res) => {
         //3. check if incomming password is the same the database password
         const validPass = await bcrypt.compare(password,user.rows[0].user_password);
         if(!validPass){
-            return res.status(200).json({"one":"two"});
+            return res.status(200).json({"message":"Invalid user name or password", "error":true});
         }
         
         //4. give them the jwt token
@@ -71,6 +72,15 @@ router.post("/login", async (req,res) => {
 });
 
 
+//verify JWT
+router.post("/is-verify", authorized,async(req,res) => {
+    try{
+        res.json({'error':false,"verification":true});
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send("Server Error");
+    }
+});
 
 
 //exporting module

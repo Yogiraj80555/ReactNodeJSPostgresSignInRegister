@@ -14,6 +14,10 @@ app.use(cors());
 app.use("/auth",require("./routes/jwtAuth"));
 
 
+//dashboard route
+app.use("/dashboard",require("./routes/dashboard"));
+
+
 app.listen(PORT , ()=>{
     console.log("server running on port "+PORT);
 });
