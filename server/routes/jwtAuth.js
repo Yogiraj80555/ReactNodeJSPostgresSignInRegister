@@ -32,7 +32,7 @@ router.post("/register", validation,async(req, res) => {
         // 5. generating our jwt token
         const token = jwtGenerator(newUser.rows[0].user_id);
 
-        res.status(200).json({'error':false,"cache":token})
+        res.status(200).json({'error':false,"cache":token,"key":""})
         // 204 indicate request is successfull but there is noting to return.
         //res.status(203).json({"error":false})
     } catch (err) {
@@ -59,12 +59,12 @@ router.post("/login", validation, async (req,res) => {
         //3. check if incomming password is the same the database password
         const validPass = await bcrypt.compare(password,user.rows[0].user_password);
         if(!validPass){
-            return res.status(200).json({"message":"Invalid user name or password", "error":true});
+            return res.status(401).json({"message":"Invalid user name or password", "error":true});
         }
         
         //4. give them the jwt token
         const token = jwtGenerator(user.rows[0].user_email)
-        res.status(200).json({'error':false,"cache":token});
+        res.status(200).json({'error':false,"cache":token,"key":""});
     } catch(err) {
         console.error(err.message);
         res.status(500).send("Server Error");
@@ -75,7 +75,7 @@ router.post("/login", validation, async (req,res) => {
 //verify JWT
 router.post("/is-verify", authorized,async(req,res) => {
     try{
-        res.json({'error':false,"verification":true});
+        res.json({'error':false,"verification":true,"key":""});
     } catch (err) {
         console.log(err.message);
         res.status(500).send("Server Error");
